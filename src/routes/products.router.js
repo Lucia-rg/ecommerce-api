@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const config = require("../config/config")
 const path = require('path');
 
 const ProductManager = require('../managers/product-manager');
@@ -40,6 +39,7 @@ router.get('/:pid', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
+        console.log('📨 Body recibido:', req.body); 
         const {title, description, code, price, status, stock, category, thumbnails} = req.body;
 
         if (!title || !description || !code || !price || !status || !stock || !category || !thumbnails) {
