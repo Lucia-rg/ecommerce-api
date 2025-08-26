@@ -1,1 +1,101 @@
-[]
+[
+  {
+    "id": "872c69b6-39db-489b-9ca9-9b6448ca56cd",
+    "title": "Laptop Gaming Pro",
+    "description": "Laptop para gaming profesional",
+    "code": "GAMING-PRO-001",
+    "price": 2000,
+    "status": true,
+    "stock": 5,
+    "category": "Computadoras",
+    "thumbnails": "https://example.com/image1.jpg"
+  },
+  {
+    "id": "a2dd3255-5fd1-48ce-bf86-5bd6ba42d92e",
+    "title": "Monitor UltraWide 34''",
+    "description": "Monitor curvo ultrapanorámico para trabajo y entretenimiento",
+    "code": "MONITOR-UW-034",
+    "price": 650,
+    "status": true,
+    "stock": 8,
+    "category": "Periféricos",
+    "thumbnails": "https://example.com/image2.jpg"
+  },
+  {
+    "id": "39e74ab6-006a-4d6a-9ead-31cc25cd5604",
+    "title": "Teclado Mecánico RGB",
+    "description": "Teclado mecánico con retroiluminación RGB y switches rojos",
+    "code": "KEY-RGB-RED",
+    "price": 1350,
+    "status": true,
+    "stock": 10,
+    "category": "Accesorios",
+    "thumbnails": "https://example.com/image3.jpg"
+  },
+  {
+    "id": "11f1a9f6-6a1d-4a68-b61b-8066b6a9d21a",
+    "title": "Mouse Inalámbrico Pro",
+    "description": "Mouse ergonómico con conectividad inalámbrica de alta precisión",
+    "code": "MOUSE-WL-PRO",
+    "price": 75,
+    "status": true,
+    "stock": 20,
+    "category": "Accesorios",
+    "thumbnails": "https://example.com/image4.jpg"
+  },
+  {
+    "id": "1d02ee49-cd8b-4433-a188-ef82623efc59",
+    "title": "Silla Gamer Xtreme",
+    "description": "Silla ergonómica para sesiones largas de juego o trabajo",
+    "code": "CHAIR-GAMER-XT",
+    "price": 350,
+    "status": true,
+    "stock": 7,
+    "category": "Mobiliario",
+    "thumbnails": "https://example.com/image5.jpg"
+  },
+  {
+    "id": "9ac65b51-c049-440f-bf2b-f501611255ee",
+    "title": "Tablet Pro 11\"",
+    "description": "Tablet de alto rendimiento ideal para dibujo y productividad",
+    "code": "TABLET-PRO-11",
+    "price": 899,
+    "status": true,
+    "stock": 12,
+    "category": "Tablets",
+    "thumbnails": "https://example.com/image6.jpg"
+  },
+  {
+    "id": "0dd7962c-55b4-468d-b909-13b506ae1ccc",
+    "title": "Auriculares Inalámbricos ANC",
+    "description": "Auriculares con cancelación activa de ruido y gran autonomía",
+    "code": "HEAD-WL-ANC",
+    "price": 199,
+    "status": true,
+    "stock": 18,
+    "category": "Audio",
+    "thumbnails": "https://example.com/image7.jpg"
+  },
+  {
+    "id": "6bcff63e-d61e-43fd-b62f-76edd28a1ddb",
+    "title": "SSD NVMe 1TB",
+    "description": "Unidad de estado sólido ultrarrápida con tecnología NVMe",
+    "code": "SSD-NVME-1TB",
+    "price": 140,
+    "status": true,
+    "stock": 25,
+    "category": "Almacenamiento",
+    "thumbnails": "https://example.com/image8.jpg"
+  },
+  {
+    "id": "524546da-c9ec-4f58-99dd-d39a2f7241c8",
+    "title": "Router WiFi 6 AX3000",
+    "description": "Router de nueva generación con WiFi 6 y gran cobertura",
+    "code": "ROUTER-AX3000",
+    "price": 160,
+    "status": true,
+    "stock": 10,
+    "category": "Redes",
+    "thumbnails": "https://example.com/image9.jpg"
+  }
+]

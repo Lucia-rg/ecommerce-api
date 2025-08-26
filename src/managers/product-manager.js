@@ -5,15 +5,24 @@ class ProductManager {
     constructor(filePath) {
         this.path = filePath;
         this.products = [];
-        this.readFile();
+        this.readFileDone = false;
+        this.readFilepPromise = this.readFile();
+    }
+
+    async ensureReadFileDone() {
+        if(!this.readFileDone) {
+            await this.readFilepPromise;
+        }
     }
 
     async readFile() {
         try {
             const data = await fs.readFile(this.path, 'utf8');
-            this.products = JSON.parse(data);            
+            this.products = JSON.parse(data);  
+            this.readFileDone = true;          
         } catch (error) {
             await this.saveFile([]);
+            this.readFileDone = true;
         }
     }
 
@@ -30,6 +39,8 @@ class ProductManager {
     }
 
     async addProduct(product) {
+
+        await this.ensureReadFileDone();
 
         const requiredFields = ['title', 'description', 'code', 'price', 'status', 'stock', 'category', 'thumbnails'];
         const missingFields = requiredFields.filter(field => 
@@ -55,10 +66,12 @@ class ProductManager {
     }
 
     async getProducts() {
+        await this.ensureReadFileDone();
         return JSON.parse(JSON.stringify(this.products));  
     }
 
     async getProductById(pid) {
+        await this.ensureReadFileDone();
         const product =  this.products.find(p => p.id === pid);
         if (!product) {
             throw new Error(`Producto no encontrado.`)
@@ -68,13 +81,18 @@ class ProductManager {
     }
 
     async updateProduct(pid, updatedFields) {
+        await this.ensureReadFileDone();
         const index = this.products.findIndex(p => p.id === pid);
 
         if (index === -1) {
             throw new Error(`Producto no encontrado.`)
         }
 
-        const updatedProduct = {pid, ...this.products[index], ...updatedFields };
+        if (updatedFields.id) {
+            delete updatedFields.id;
+        }
+
+        const updatedProduct = {...this.products[index], ...updatedFields };
         this.products[index] = updatedProduct;
 
         await this.saveFile(this.products);
@@ -82,13 +100,15 @@ class ProductManager {
     }
 
     async deleteProduct(pid) {
-        const filteredBooks = this.products.filter(p => p.id !== pid);
+        await this.ensureReadFileDone();
+        const initialLength = this.products.length;
+        this.products = this.products.filter(p => p.id !== pid);
 
-        if (this.products.length === filteredBooks.length) {
+        if (this.products.length === initialLength) {
             throw new Error(`Producto no encontrado.`)
         }
 
-        await this.saveFile(this.filteredBooks);
+        await this.saveFile(this.products);
         return pid;
 
     }

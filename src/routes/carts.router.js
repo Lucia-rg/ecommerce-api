@@ -1,11 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const config = require("../config/config")
 
 const CartManager = require('../managers/carts-manager');
 const path = require('path');
 
-// const cartManager = new CartManager(config.getFilePath("carts.json"));
  const cartManager = new CartManager(path.join(__dirname, '../data/carts.json'))
 
 router.post('/', async (req, res) => {

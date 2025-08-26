@@ -5,13 +5,21 @@ class CartManager {
     constructor (filePath) {
         this.path = filePath;
         this.carts = [];
-        this.readFile();
+        this.readFileDone = false;
+        this.readFilepPromise = this.readFile();
+    }
+
+    async ensureReadFileDone() {
+        if(!this.readFileDone) {
+            await this.readFilepPromise;
+        }
     }
 
     async readFile() {
         try {
             const data = await fs.readFile(this.path, 'utf8');
-            this.carts = JSON.parse(data);            
+            this.carts = JSON.parse(data);  
+            this.readFileDone = true;             
         } catch (error) {
             await this.saveFile([]);
         }
@@ -30,6 +38,7 @@ class CartManager {
     }
 
     async createCart() {
+        await this.ensureReadFileDone();
         const newCart = {id: this.#generateId(), products: []};
         this.carts.push(newCart);
 
@@ -38,6 +47,7 @@ class CartManager {
     }
 
     async getCartById(cid) {
+        await this.ensureReadFileDone();
         const cart = this.carts.find(c => c.id === cid);
         if (!cart) {
             throw new Error(`Carrito no encontrado.`)
@@ -46,9 +56,14 @@ class CartManager {
     }
 
     async addProductToCart(cid, pid) {
+        await this.ensureReadFileDone();
         try {
+            const cart = await this.getCartById(cid);
+            
+            if (!Array.isArray(cart.products)) {
+                cart.products = [];
+            }
 
-            const cart = this.getCartById(cid)
             const existingProduct = cart.products.find(p => p.product === pid);
 
             if (existingProduct) {
