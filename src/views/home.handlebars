@@ -1,0 +1,167 @@
+<div class="row">
+    <div class="col-12">
+        <h1><i class="fas fa-store me-2"></i>Productos disponibles</h1>
+        <span class="badge bg-secondary fs-6">{{products.length}} productos </span>
+
+        {{#if products.length}}
+
+            <div class="row mt-4">
+
+                <div class="col-md-6 m-1">
+                    <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" class="form-control" 
+                        placeholder="Buscar productos...">
+                    </div>
+                </div>
+
+                <div class="col-md-6 m-1">
+                    <select class="form-select" id="categoryFilter">
+                        <option value="">Todas las categorías</option>
+                        {{#each categories}}
+                            <option value="{{this}}">{{this}}</option>
+                        {{/each}}
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="row" id="productsContainer">
+                {{#each products}}
+
+                    <div class="col-md-6 col-lg-4 mb-4 product-item" 
+                    data-category="{{this.category}}" data-title="{{this.title}}">
+
+                        <div class="product-card h-100">
+                            <div class="position-relative">
+                                {{#if this.thumbnails.length}}
+
+                                    <img src="{{this.thumbnails}}" alt="{{this.title}}"
+                                    class="card-img-top product-image">
+                                    
+
+                                {{else}}
+
+                                    <div class="bg-light d-flex align-items-center justify-content-center"
+                                    style="height: 200px; border-radius: 5px;">
+                                        <i class="fas fa-image fa-3x text-muted"></i>  
+                                    </div>
+
+                                {{/if}}
+
+                                <span class="position-absolute top-0 end-0 m-2 badge {{#if this.status}}bg-success{{else}}bg-danger{{/if}}">
+                                    {{#if this.status}}Disponible{{else}}Agotado{{/if}}
+                                </span>
+
+                            </div>
+
+                            <div class="card-body">
+                                <h5 class="card-title text-truncate">{{this.title}}</h5>
+                                <p class="card-text text-muted small">{{this.description}}</p>
+
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="h5">${{this.price}}</span>
+                                    <span class="badge bg-dark">{{this.stock}} unidades</span>
+
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-tag me-1"></i>{{this.category}}
+                                    </span>
+                                    <span class="badge bg-light text-dark">
+                                        #{{this.code}}
+                                    </span>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-secondary btn-sm">Ver detalles</button>
+                                    <button class="btn btn-dark btn-sm" data-product-id="{{this.id}}"><i class="fas fa-cart-plus me-1"></i> Agregar al carrito</button>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {{/each}}
+            </div>
+
+            <div id="noResults" class="text-center d-none mt-5">
+                <i class="fas fa-search fa-3x text-muted mb-2"></i>
+                <h4 class="text-muted">No se encontraron productos</h4>
+            </div>
+
+        {{else}}
+
+            <div class="text-center py-5">
+                <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                <h3 class="text-muted">No hay productos disponibles</h3>
+                <p class="text-muted">Agrega algunos productos para comenzar</p>
+                <a href="/realtimeproducts" class="btn btn-secondary mt-3">
+                    <i class="fas fa-plus me-1"></i> Crear primer producto
+                </a>
+            </div>
+
+        {{/if}}
+
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const productItems = document.querySelectorAll('.product-item');
+        const noResults = document.getElementById('noResults');
+        const productsContainer = document.getElementById('productsContainer');
+
+        function filterProducts() {
+            const searchKey = (searchInput?.value || '').toLowerCase();
+            const categoryValue = categoryFilter?.value || '';
+            let counterItems = 0;
+
+            productItems.forEach(item => {
+                const title = item.getAttribute('data-title').toLowerCase();
+                const category = item.getAttribute('data-category');
+
+                const matchTitle = title.includes(searchKey);
+                const matchCategory = categoryValue === '' || category === categoryValue;
+
+                if (matchTitle && matchCategory) {
+                    item.classList.remove('d-none');
+                    counterItems++;
+                } else {
+                    item.classList.add('d-none');
+                }
+
+            });
+
+            if (noResults) {
+                if (counterItems == 0 && productItems.length > 0) {
+                    noResults.classList.remove('d-none');
+                    productsContainer.classList.add('d-none');
+                } else {
+                    noResults.classList.add('d-none');
+                    productsContainer.classList.remove('d-none');
+                }
+            }
+
+        }
+
+        if (searchInput) searchInput.addEventListener('input', filterProducts);
+        if (categoryFilter) categoryFilter.addEventListener('change', filterProducts);
+
+        if (productItems.length > 0) {
+        filterProducts();
+        }
+
+        filterProducts();
+
+    })
+
+</script>
+

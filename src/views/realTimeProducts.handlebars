@@ -1,0 +1,151 @@
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Productos - Tiempo Real</h1>
+            <span class="badge bg-success fs-6" id="connectionStatus">
+                <i class="fas fa-wifi me-1"></i>Conectado
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-5 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Crear nuevo producto</h5>
+            </div>
+
+            <div class="card-body">
+                <form id="productForm" action="" class="needs-validation" novalidate>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label for="title" class="form-label">Título: </label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                            <div class="invalid-feedback">El título es requerido</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="code" class="form-label">Código: </label>
+                            <input type="text" class="form-control" id="code" name="code" required>
+                            <div class="invalid-feedback">El código es requerido</div>
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label for="description" class="form-label">Descripción: </label>
+                        <textarea class="form-control" id="description" name="description" rows="2" required></textarea>
+                        <div class="invalid-feedback">La descripción es requerida</div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label for="price" class="form-label">Precio: </label>
+                            <input type="number" class="form-control" id="price" name="price" required min="0" step="0.01">
+                            <div class="invalid-feedback">El precio es requerido</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="stock" class="form-label">Stock: </label>
+                            <input type="number" class="form-control" id="stock" name="stock" required min="0">
+                            <div class="invalid-feedback">El stock es requerido</div>
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label for="category" class="form-label">Categoría: </label>
+                        <input type="text" class="form-control" id="category" name="category" required>
+                        <div class="invalid-feedback">La categoría es requerida</div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label for="thumnails" class="form-label">Imagen (URL): </label>
+                        <input type="text" class="form-control" id="thumnails" name="thumnails" placeholder="https://ejemplo.com/imagen1.jpg" required>
+
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="status" name="status" checked>
+                        <label for="status" class="form-check-label">Producto activo</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary w-100">
+                        <i class="fas fa-plus me-2"></i>Crear Producto
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card">
+
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>Lista de productos
+                    <span class="badge bg-light text-dark ms-2" id="productsCount">0</span>
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+            </div>
+
+        </div>
+    
+    </div>
+
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function(){
+        const form = document.getElementById('productForm');
+        form.addEventListener('submit', (e) => { 
+            e.preventDefault();
+
+            if(!form.checkValidity()) {
+                e.stopPropagation();
+                form.classList.add('was-validated');
+                return;
+            }
+
+            const formData = new FormData(form);
+            const productData = {
+                title: formData.get('title'),
+                description: formData.get('description'),
+                code: formData.get('code'),
+                price: parseFloat(formData.get('price')),
+                status: document.getElementById('status').checked,
+                stock: parseInt(formData.get('stock')),
+                category: formData.get('category'),
+                thumbnails: formData.get('thumbnails') ? formData.get('thumbnails') : []
+            };
+            console.log('📤 Enviando producto:', productData);
+
+        })
+
+    })
+
+</script>
+
+
+
+{{!-- <script>
+    const socket = io();
+    console.log('Conectado a WebSockets');
+</script> --}}
