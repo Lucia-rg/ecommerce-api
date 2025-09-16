@@ -15,9 +15,9 @@
     "title": "Monitor UltraWide 34''",
     "description": "Monitor curvo ultrapanorámico para trabajo y entretenimiento",
     "code": "MONITOR-UW-034",
-    "price": 650,
-    "status": true,
-    "stock": 8,
+    "price": 640,
+    "status": false,
+    "stock": 2,
     "category": "Periféricos",
     "thumbnails": "https://example.com/image2.jpg"
   },
