@@ -13,11 +13,11 @@
     <div class="col-lg-5 mb-4">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Crear nuevo producto</h5>
+                <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Crear nuevo producto </h5>
             </div>
 
             <div class="card-body">
-                <form id="productForm" action="" class="needs-validation" novalidate>
+                <form id="productForm" class="needs-validation" novalidate>
 
                     <div class="row">
 
@@ -69,8 +69,8 @@
 
                     <div class="mb-3">
 
-                        <label for="thumnails" class="form-label">Imagen (URL): </label>
-                        <input type="text" class="form-control" id="thumnails" name="thumnails" placeholder="https://ejemplo.com/imagen1.jpg" required>
+                        <label for="thumbnails" class="form-label">Imagen (URL): </label>
+                        <input type="text" class="form-control" id="thumbnails" name="thumbnails" placeholder="https://ejemplo.com/imagen1.jpg" required>
 
                     </div>
 
@@ -91,17 +91,40 @@
 
     </div>
 
-    <div class="col-lg-7">
+    <div class="col-lg-7 mb-4">
         <div class="card">
-
             <div class="card-header">
                 <h5 class="mb-0">
                     <i class="fas fa-list me-2"></i>Lista de productos
-                    <span class="badge bg-light text-dark ms-2" id="productsCount">0</span>
+                    <span class="badge bg-light text-dark small" id="productsCount">0</span>
                 </h5>
             </div>
 
             <div class="card-body">
+
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="productsTableBody">
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                    Cargando productos...
+                                </td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
 
             </div>
 
@@ -111,41 +134,3 @@
 
 </div>
 
-<script>
-
-    document.addEventListener('DOMContentLoaded', function(){
-        const form = document.getElementById('productForm');
-        form.addEventListener('submit', (e) => { 
-            e.preventDefault();
-
-            if(!form.checkValidity()) {
-                e.stopPropagation();
-                form.classList.add('was-validated');
-                return;
-            }
-
-            const formData = new FormData(form);
-            const productData = {
-                title: formData.get('title'),
-                description: formData.get('description'),
-                code: formData.get('code'),
-                price: parseFloat(formData.get('price')),
-                status: document.getElementById('status').checked,
-                stock: parseInt(formData.get('stock')),
-                category: formData.get('category'),
-                thumbnails: formData.get('thumbnails') ? formData.get('thumbnails') : []
-            };
-            console.log('📤 Enviando producto:', productData);
-
-        })
-
-    })
-
-</script>
-
-
-
-{{!-- <script>
-    const socket = io();
-    console.log('Conectado a WebSockets');
-</script> --}}
