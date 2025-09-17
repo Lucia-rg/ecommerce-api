@@ -44,6 +44,14 @@ app.use('/', viewsRouter);
  io.on("connection", (socket) => {
     console.log('Usuario conectado: ', socket.id);
 
+    productManager.getProducts()
+    .then(products => {
+        socket.emit("productUpdated", products);
+    })
+    .catch(error => {
+        console.error("Error enviando productos iniciales:", error);
+    });
+
     socket.on("createProduct", async(productData) => {
         try {
 
@@ -53,15 +61,21 @@ app.use('/', viewsRouter);
                 code: productData.code,
                 price: Number(productData.price),
                 status: productData.status !== undefined ? productData.status : true,
+                stock: Number(productData.stock),
                 category: productData.category,
                 thumbnails: productData.thumbnails
 
             });
 
-            io.emit("productCreated", newProduct);
-            io.emit("requestProducts");
-
+            const updatedProducts = await productManager.getProducts();
+            io.emit("productUpdated", updatedProducts);
+            
             console.log("✅ Producto creado exitosamente:", newProduct.id);
+
+            // io.emit("productCreated", newProduct);
+            // io.emit("requestProducts");
+
+            // console.log("✅ Producto creado exitosamente:", newProduct.id);
 
         } catch (error) {
             console.error("Error creando producto:", error.message);
@@ -74,9 +88,9 @@ app.use('/', viewsRouter);
 
             await productManager.deleteProduct(productId);
 
-            io.emit("productDeleted", productId);
-            io.emit("requestProducts");
-
+            const updatedProducts = await productManager.getProducts();
+            io.emit("productUpdated", updatedProducts);
+            
             console.log("✅ Producto eliminado exitosamente:", productId);
             
         } catch (error) {
@@ -89,7 +103,7 @@ app.use('/', viewsRouter);
     socket.on("requestProducts", async() => {
         try {
             const products = await productManager.getProducts();
-            socket.emit("productsUpdated", products);
+            socket.emit("productUpdated", products);
             
         } catch (error) {
             console.error("Error obteniendo productos:", error.message);
@@ -101,13 +115,6 @@ app.use('/', viewsRouter);
         console.log('Usuario desconectado: ', socket.id);
     });
 
-    productManager.getProducts()
-        .then(products => {
-            socket.emit("productsUpdated", products);
-        })
-        .catch(error => {
-            console.error("Error enviando productos iniciales:", error);
-        });
  })
 
 // Ruta raíz. Información de la API

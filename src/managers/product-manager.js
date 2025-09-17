@@ -6,12 +6,12 @@ class ProductManager {
         this.path = filePath;
         this.products = [];
         this.readFileDone = false;
-        this.readFilepPromise = this.readFile();
+        this.readFilePromise = this.readFile();
     }
 
     async ensureReadFileDone() {
         if(!this.readFileDone) {
-            await this.readFilepPromise;
+            await this.readFilePromise;
         }
     }
 
@@ -72,7 +72,7 @@ class ProductManager {
 
     async getProductById(pid) {
         await this.ensureReadFileDone();
-        const product =  this.products.find(p => p.id === pid);
+        const product =  this.products.find(p => p.id == pid);
         if (!product) {
             throw new Error(`Producto no encontrado.`)
         }
@@ -82,7 +82,7 @@ class ProductManager {
 
     async updateProduct(pid, updatedFields) {
         await this.ensureReadFileDone();
-        const index = this.products.findIndex(p => p.id === pid);
+        const index = this.products.findIndex(p => p.id == pid);
 
         if (index === -1) {
             throw new Error(`Producto no encontrado.`)
@@ -102,7 +102,7 @@ class ProductManager {
     async deleteProduct(pid) {
         await this.ensureReadFileDone();
         const initialLength = this.products.length;
-        this.products = this.products.filter(p => p.id !== pid);
+        this.products = this.products.filter(p => p.id != pid);
 
         if (this.products.length === initialLength) {
             throw new Error(`Producto no encontrado.`)
