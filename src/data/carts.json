@@ -36,5 +36,14 @@
         "quantity": 2
       }
     ]
+  },
+  {
+    "id": "bb932c1f-fac7-4cf8-ae77-f692b165c704",
+    "products": [
+      {
+        "product": "c22ac8f0-245f-4dbd-9246-aa2a7a08fcef",
+        "quantity": 1
+      }
+    ]
   }
 ]

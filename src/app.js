@@ -5,36 +5,34 @@ const { Server } = require("socket.io");
 const http = require("http");
 const path = require('path');
 
-const ProductManager = require("./src/managers/product-manager");
-const CartManager = require("./src/managers/carts-manager");
+const CartManager = require("./managers/carts-manager");
+const cartManager = new CartManager(path.join(__dirname, "data/carts.json"));
 
 const server = http.createServer(app);
 const io = new Server(server);
-
-const productManager = new ProductManager(path.join(__dirname, '/src/data/products.json'));
-const cartManager = new CartManager(path.join(__dirname, "/src/data/carts.json"));
 
 // Configuración handlebars 
 const hbs = create({
     extname: '.handlebars',
     defaultLayout: 'main',
-    layoutsDir: path.join(__dirname, "src/views/layouts/"),
-    partialsDir: path.join(__dirname, "src/views/partials/")
+    layoutsDir: path.join(__dirname, "views/layouts/"),
+    partialsDir: path.join(__dirname, "views/partials/")
 });
 
 app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
-app.set("views", path.join(__dirname, "src/views"));
+app.set("views", path.join(__dirname, "views"));
 
 // Middlewares
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true })); 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Routers
-const productsRouter = require('./src/routes/products.router');
-const cartsRouter = require('./src/routes/carts.router');
-const viewsRouter = require('./src/routes/views.router');
+const productsRouter = require('./routes/products.router');
+const productService = require('./routes/products.router').productService;
+const cartsRouter = require('./routes/carts.router');
+const viewsRouter = require('./routes/views.router');
 
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
@@ -44,7 +42,7 @@ app.use('/', viewsRouter);
  io.on("connection", (socket) => {
     console.log('Usuario conectado: ', socket.id);
 
-    productManager.getProducts()
+    productService.getProducts()
     .then(products => {
         socket.emit("productUpdated", products);
     })
@@ -55,7 +53,7 @@ app.use('/', viewsRouter);
     socket.on("createProduct", async(productData) => {
         try {
 
-            const newProduct = await productManager.addProduct({
+            const newProduct = await productService.addProduct({
                 title: productData.title,
                 description: productData.description,
                 code: productData.code,
@@ -67,15 +65,10 @@ app.use('/', viewsRouter);
 
             });
 
-            const updatedProducts = await productManager.getProducts();
+            const updatedProducts = await productService.getProducts();
             io.emit("productUpdated", updatedProducts);
             
             console.log("✅ Producto creado exitosamente:", newProduct.id);
-
-            // io.emit("productCreated", newProduct);
-            // io.emit("requestProducts");
-
-            // console.log("✅ Producto creado exitosamente:", newProduct.id);
 
         } catch (error) {
             console.error("Error creando producto:", error.message);
@@ -86,9 +79,9 @@ app.use('/', viewsRouter);
     socket.on("deleteProduct", async (productId) => {
         try {
 
-            await productManager.deleteProduct(productId);
+            await productService.deleteProduct(productId);
 
-            const updatedProducts = await productManager.getProducts();
+            const updatedProducts = await productService.getProducts();
             io.emit("productUpdated", updatedProducts);
             
             console.log("✅ Producto eliminado exitosamente:", productId);
@@ -102,7 +95,7 @@ app.use('/', viewsRouter);
 
     socket.on("requestProducts", async() => {
         try {
-            const products = await productManager.getProducts();
+            const products = await productService.getProducts();
             socket.emit("productUpdated", products);
             
         } catch (error) {

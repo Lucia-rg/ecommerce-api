@@ -97,5 +97,16 @@
     "stock": 10,
     "category": "Redes",
     "thumbnails": "https://example.com/image9.jpg"
+  },
+  {
+    "id": "c22ac8f0-245f-4dbd-9246-aa2a7a08fcef",
+    "title": "Silla Gamer Ergonómica",
+    "description": "Silla gamer reclinable con soporte lumbar y reposabrazos ajustables",
+    "code": "CHAIR-GAMER-005",
+    "price": 300,
+    "status": true,
+    "stock": 2,
+    "category": "Muebles",
+    "thumbnails": "https://example.com/silla-gamer.jpg"
   }
 ]
