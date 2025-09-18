@@ -140,7 +140,6 @@ app.get('/api', (req, res) => {
                 'createProduct': 'Crear nuevo producto',
                 'deleteProduct': 'Eliminar producto',
                 'requestProducts': 'Solicitar lista de productos',
-                'addToCart': 'Agregar producto al carrito'
             }
         },
         documentation: 'Usa Postman para probar los endpoints'
