@@ -31,20 +31,13 @@ class ProductService {
 
     async updateProduct(pid, updatedFields) {
         if(!pid) throw new Error('ID del producto requerido');
-        const existing = await this.productDao.getProductById(pid);
-        if(!existing) throw new Error(`Producto no encontrado.`);
-
         return await this.productDao.updateProduct(pid, updatedFields);
 
     }
 
     async deleteProduct(pid) {
         if(!pid) throw new Error('ID del producto requerido');
-        const existing = await this.productDao.getProductById(pid);
-        if(!existing) throw new Error(`Producto no encontrado.`);
-
         return await this.productDao.deleteProduct(pid);
-
     }
 
 }
