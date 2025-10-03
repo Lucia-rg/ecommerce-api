@@ -1,0 +1,344 @@
+<div class="row">
+    <div class="col-12">
+        <h1><i class="fas fa-store me-2"></i>Productos disponibles</h1>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="badge bg-secondary fs-6">{{products.length}} productos en esta página</span>
+
+            {{#if activeFilterType}}
+            <div class="d-flex align-items-center">
+                <span class="badge bg-dark me-2"> 
+                    <i class="fas fa-filter me-1"></i>
+                    {{#if (eq activeFilterType 'category')}}
+                        Categoría: {{selectedCategory}}
+                    {{else}}
+                        {{#if (eq activeFilterType 'status')}}
+                            Estado: {{#if (eq selectedStatus 'available')}}Disponible{{else}}No disponible{{/if}}
+                        {{/if}}
+                    {{/if}}
+                </span>
+
+                <a href="#" class="btn btn-sm btn-outline-secondary" id="clearFiltersBtn">
+                    <i class="fas fa-times me-1"></i>Limpiar
+                </a>
+            </div>
+            {{/if}}
+        </div>
+
+        {{#if products.length}}
+
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <label for="categoryFilter" class="form-label">Filtrar por categoría:</label>
+                    <select class="form-select" id="categoryFilter">
+                        <option value="">Todas las categorías</option>
+                        {{#each categories}}
+                            <option value="{{this.value}}" {{#if (eq this.value ../selectedCategory)}}selected{{/if}}>
+                                {{this.value}}
+                            </option>
+                        {{/each}}
+                    </select>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="statusFilter" class="form-label">Filtrar por estado:</label>
+                    <select class="form-select" id="statusFilter">
+                        <option value="">Todos los estados</option>
+                        <option value="available" {{#if (eq selectedStatus 'available')}}selected{{/if}}>Disponible</option>
+                        <option value="unavailable" {{#if (eq selectedStatus 'unavailable')}}selected{{/if}}>No disponible</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="sortFilter" class="form-label">Ordenar por precio:</label>
+                    <select class="form-select" id="sortFilter">
+                        <option value="">Sin ordenar</option>
+                        <option value="asc" {{#if (eq selectedSort 'asc')}}selected{{/if}}>Menor a mayor</option>
+                        <option value="desc" {{#if (eq selectedSort 'desc')}}selected{{/if}}>Mayor a menor</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="row" id="productsContainer">
+                {{#each products}}
+
+                    <div class="col-md-6 col-lg-4 mb-4 product-item" 
+                    data-category="{{this.category}}" data-title="{{this.title}}" data-product-id="{{this.id}}">
+
+                        <div class="product-card h-100">
+                            <div class="position-relative">
+                                {{#if this.thumbnails.length}}
+
+                                    <img src="{{this.thumbnails.[0]}}" alt="{{this.title}}"
+                                    class="card-img-top product-image">
+                                    
+
+                                {{else}}
+
+                                    <div class="bg-light d-flex align-items-center justify-content-center"
+                                    style="height: 200px; border-radius: 5px;">
+                                        <i class="fas fa-image fa-3x text-muted"></i>  
+                                    </div>
+
+                                {{/if}}
+
+                                <span class="position-absolute top-0 end-0 m-2 badge {{#if this.status}}bg-success{{else}}bg-danger{{/if}}">
+                                    {{#if this.status}}Disponible{{else}}Agotado{{/if}}
+                                </span>
+
+                            </div>
+
+                            <div class="card-body">
+                                <h5 class="card-title text-truncate">{{this.title}}</h5>
+                                <p class="card-text text-muted small">{{this.description}}</p>
+
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="h5">${{this.price}}</span>
+                                    <span class="badge bg-dark">{{this.stock}} unidades</span>
+
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-tag me-1"></i>{{this.category}}
+                                    </span>
+                                    <span class="badge bg-light text-dark">
+                                        #{{this.code}}
+                                    </span>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="/products/{{this.id}}" class="btn btn-secondary btn-sm view-details">
+                                        <i class="fas fa-eye me-1"></i>Ver detalles
+                                    </a>
+                                    <button class="btn btn-dark btn-sm add-to-cart" data-product-id="{{this.id}}" 
+                                        {{#unless this.status}}disabled{{/unless}} 
+                                        {{#unless this.stock}}disabled{{/unless}}>
+                                        <i class="fas fa-cart-plus me-1"></i> 
+                                        {{#if this.status}}
+                                            {{#if this.stock}}Agregar al carrito{{else}}Sin stock{{/if}}
+                                        {{else}}No disponible{{/if}}
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {{/each}}
+            </div>
+
+            {{#if pagination}}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <nav>
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item {{#unless pagination.hasPrevPage}}disabled{{/unless}}">
+                                    <a class="page-link" href="{{pagination.prevLink}}" {{#unless pagination.hasPrevPage}}tabindex="-1" aria-disabled="true"{{/unless}}>
+                                        <i class="fas fa-chevron-left me-1"></i>Anterior
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <span>Página {{pagination.page}} de {{pagination.totalPages}}</span>
+                                </li>
+
+                                <li class="page-item {{#unless pagination.hasNextPage}}disabled{{/unless}}">
+                                    <a class="page-link" href="{{pagination.nextLink}}" {{#unless pagination.hasNextPage}}tabindex="-1" aria-disabled="true"{{/unless}}>
+                                        <i class="fas fa-chevron-right me-1"></i>Siguiente
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            {{/if}}
+
+            <div id="noResults" class="text-center d-none mt-5">
+                <i class="fas fa-search fa-3x text-muted mb-2"></i>
+                <h4 class="text-muted">No se encontraron productos</h4>
+            </div>
+
+        {{else}}
+
+            <div class="text-center py-5">
+                <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                <h3 class="text-muted">No hay productos disponibles</h3>
+                <p class="text-muted">Agrega algunos productos para comenzar</p>
+                <a href="/realtimeproducts" class="btn btn-secondary mt-3">
+                    <i class="fas fa-plus me-1"></i> Crear primer producto
+                </a>
+            </div>
+
+        {{/if}}
+
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const categoryFilter = document.getElementById('categoryFilter');
+        const statusFilter = document.getElementById('statusFilter');
+        const sortFilter = document.getElementById('sortFilter');
+
+        const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+        if (clearFiltersBtn) {
+            clearFiltersBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                const currentPath = window.location.pathname;
+                const basePath = currentPath.includes('/api/products') ? '/api/products' : '/products';
+            
+                window.location.href = basePath;
+            })
+        }
+
+        function buildUrlWithParams(params) {
+            const currentPath = window.location.pathname;
+            const basePath = currentPath.includes('/api/products') ? '/api/products' : '/products';
+            const url = new URL(basePath, window.location.origin);
+            url.search = '';
+
+            Object.keys(params).forEach(key => {
+                if (params[key]) {
+                    url.searchParams.set(key, params[key]);
+                }
+            });
+            
+            return url.toString();
+
+        }
+
+        function applyFilters() {
+            const params = {
+                page: '1'
+            };
+
+            if (categoryFilter.value) {
+                params.category = categoryFilter.value;
+                statusFilter.value = '';
+            } else if (statusFilter.value) {
+                params.status = statusFilter.value;
+                categoryFilter.value = '';
+            }
+
+            if (sortFilter.value) {
+                params.sort = sortFilter.value;
+            }
+
+            window.location.href = buildUrlWithParams(params);
+        }
+
+        if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
+        if (statusFilter) statusFilter.addEventListener('change', applyFilters);
+        if (sortFilter) sortFilter.addEventListener('change', applyFilters);
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+        // Event Listeners para botones de "Agregar al carrito"
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                addToCart(productId);
+            });
+        });
+
+
+        async function getCurrentCartId() {
+            
+            let cartId = localStorage.getItem('currentCartId');
+            
+            if (!cartId) {
+                try {
+                    const response = await fetch('/api/carts/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const newCart = await response.json();
+                        cartId = newCart.id;
+                        
+                        if (!cartId) {
+                            throw new Error('No se pudo obtener el ID del carrito de la respuesta');
+                        }
+                        
+                        localStorage.setItem('currentCartId', cartId);
+                    } else {
+                        const errorText = await response.text();
+                        throw new Error(`Error ${response.status} creando carrito: ${errorText}`);
+                    }
+                } catch (error) {
+                    throw error;
+                }
+            }
+            
+            return cartId;
+        }
+
+        async function addToCart(productId, quantity = 1) {
+            const button = document.querySelector(`[data-product-id="${productId}"]`);
+            const originalText = button.innerHTML;
+            const originalDisabled = button.disabled;
+            
+            try {
+                button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Agregando...';
+                button.disabled = true;
+                
+                let cartId = await getCurrentCartId();
+                
+                if (!cartId || cartId === 'undefined' || cartId === 'null') {
+                    throw new Error('CartId inválido: ' + cartId);
+                }
+                
+                const url = `/api/carts/${cartId}/product/${productId}`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Error al agregar al carrito: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                showNotification('✅ Producto agregado al carrito correctamente');
+                
+            } catch (error) {
+                console.error('💥 Error completo en addToCart:', error);
+                showNotification('❌ ' + error.message, 'error');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = originalDisabled;
+            }
+        }
+   
+    })
+
+</script>
+

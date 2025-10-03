@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const productSchema = new mongoose.Schema({
     title: {
@@ -12,8 +13,8 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: [true, 'La descripción es obligatorio.'],
         trim: true,
-        minlength: [10, 'La descripción debe tener al menos 3 caracteres.'],
-        maxlength: [500, 'La descripción no puede exceder 100 caracteres.']
+        minlength: [10, 'La descripción debe tener al menos 10 caracteres.'],
+        maxlength: [500, 'La descripción no puede exceder 500 caracteres.']
     },
     code: {
         type: String,
@@ -48,10 +49,12 @@ const productSchema = new mongoose.Schema({
     }
 });
 
+productSchema.plugin(mongoosePaginate);
+
 productSchema.methods.toJSON = function() {
     const product = this.toObject();
-    product.id = product._id;
-    delete product._id;
+    product.id = product._id.toString();
+    delete product._id;                   
     delete product.__v;
     return product;
 };

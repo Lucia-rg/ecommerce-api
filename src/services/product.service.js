@@ -3,8 +3,8 @@ class ProductService {
         this.productDao = productDao
     }
 
-    async getProducts() {
-        return await this.productDao.getProducts();
+    async getProducts({ limit = 10, page = 1, sort, query } = {}) {
+        return await this.productDao.getProducts({limit, page, sort, query});
     }
 
     async getProductById(pid) {
