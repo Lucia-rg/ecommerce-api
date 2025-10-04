@@ -1,0 +1,162 @@
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/products"><i class="fas fa-arrow-left me-1"></i>Continuar comprando</a></li>
+                <li class="breadcrumb-item active">Tu carrito</li>
+            </ol>
+        </nav>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-shopping-cart me-2"></i>Tu carrito</h1>
+            <span class="badge bg-secondary fs-6" id="cartSummary">
+                {{#if cart.products.length}}
+                    {{cart.products.length}} {{#if (eq cart.products.length 1)}}producto{{else}}productos{{/if}}
+                {{else}}
+                    Carrito vacío
+                {{/if}}
+            </span>
+        </div>
+
+        {{#if cart.products.length}}
+        <div class="row">
+            <!-- Lista de productos -->
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-list me-2"></i>Productos en el carrito</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        {{#each cart.products}}
+                        <div class="cart-item p-3 border-bottom" data-product-id="{{this.product.id}}">
+                            <div class="row align-items-center">
+                                <div class="col-2">
+                                    {{#if this.product.thumbnails.length}}
+                                        <img src="{{this.product.thumbnails.[0]}}" alt="{{this.product.title}}" 
+                                             class="img-fluid rounded" style="max-height: 80px;">
+                                    {{else}}
+                                        <div class="bg-light d-flex align-items-center justify-content-center rounded" 
+                                             style="width: 80px; height: 80px;">
+                                            <i class="fas fa-image text-muted"></i>
+                                        </div>
+                                    {{/if}}
+                                </div>
+                                
+                                <div class="col-6">
+                                    <h6 class="mb-1">{{this.product.title}}</h6>
+                                    <p class="text-muted small mb-0">{{this.product.category}}</p>
+                                    <span class="badge bg-secondary">#{{this.product.code}}</span>
+                                </div>
+                                
+                                <div class="col-2 text-center">
+                                    <span class="h6 mb-0">${{this.product.price}}</span>
+                                    <small class="text-muted d-block">c/u</small>
+                                </div>
+                                
+                                <div class="col-2 text-center">
+                                    <span class="h5 text-primary mb-0">${{multiply this.product.price this.quantity}}</span>
+                                    <div class="mt-1">
+                                        <span class="badge bg-dark">Cant: {{this.quantity}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen del carrito -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Resumen del pedido</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span id="subtotal">${{calculateSubtotal cart.products}}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Envío:</span>
+                            <span class="text-success">Gratis</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-4">
+                            <strong>Total:</strong>
+                            <strong class="h5" id="total">${{calculateSubtotal cart.products}}</strong>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success btn-lg" id="checkoutBtn">
+                                <i class="fas fa-credit-card me-2"></i>Finalizar compra
+                            </button>
+                            <button class="btn btn-ligh btn-outline-black" id="clearCartBtn">
+                                <i class="fas fa-trash me-2"></i>Vaciar carrito
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{else}}
+        <div class="text-center py-5">
+            <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
+            <h3 class="text-muted">Tu carrito está vacío</h3>
+            <p class="text-muted">Agrega algunos productos para comenzar</p>
+            <a href="/products" class="btn btn-primary btn-lg mt-3">
+                <i class="fas fa-store me-2"></i>Explorar productos
+            </a>
+        </div>
+        {{/if}}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cartId = '{{cart.id}}';
+
+        // Vaciar carrito
+        document.getElementById('clearCartBtn')?.addEventListener('click', async function() {
+            if (confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
+                try {
+                    const response = await fetch(`/api/carts/${cartId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        showNotification('Carrito vaciado', 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        throw new Error('Error al vaciar carrito');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showNotification('Error al vaciar carrito', 'error');
+                }
+            }
+        });
+
+        // Finalizar compra (placeholder)
+        document.getElementById('checkoutBtn')?.addEventListener('click', function() {
+            showNotification('Funcionalidad de checkout en desarrollo', 'info');
+        });
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+    });
+</script>

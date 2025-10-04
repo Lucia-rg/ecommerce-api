@@ -47,6 +47,17 @@ const hbs = create({
         },
         neq: function (a, b) {
             return a !== b;
+        },
+        gt: function (a, b) {
+        return a > b;
+        },
+        multiply: function (a, b) {
+        return a * b;
+        },
+        calculateSubtotal: function (products) {
+            return products.reduce((total, item) => {
+                return total + (item.product.price * item.quantity);
+            }, 0);
         }
     }
 });

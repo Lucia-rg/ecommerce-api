@@ -107,7 +107,6 @@ router.get('/home', async (req, res) => {
             message: 'Bienvenido a nuestra tienda'
         });
 });
-
 router.get('/products', (req, res) => renderProductsView(req, res, '/products'));
 router.get('/api/products', (req, res) => renderProductsView(req, res, '/api/products'));
 router.get('/realtimeproducts', (req, res) => {
@@ -117,23 +116,56 @@ router.get('/realtimeproducts', (req, res) => {
     });
 });
 router.get('/products/:pid', async (req, res) => {
-    const productId = req.params.pid;
+    try {
+        const productId = req.params.pid;
         const product = await productService.getProductById(productId);
+
+        const normalizedProduct = {
+            ...product.toObject(),
+            id: product._id.toString()
+        };
         
         res.render('productDetail', {
             title: product.title,
-            product: product
+            product: normalizedProduct
         });
-})
-router.get('/carts/:cid', async (req, res) => {
-    const cartId = req.params.cid;
-    const cart = await cartService.getCartById(cartId);
+    } catch (error) {
         
-    res.render('cartDetail', {
-        title: 'Tu Carrito',
-        cart: cart
-    });
+        res.render('productDetail', {
+            title: 'Error',
+            product: null
+        });
+    }
+});
+router.get('/carts/:cid', async (req, res) => {
+    try {
+        const cartId = req.params.cid;
+        const cart = await cartService.getCartById(cartId);
+        
+        const normalizedCart = {
+            ...cart.toObject(),
+            id: cart._id.toString(),
+            products: cart.products.map(item => ({
+                ...item.toObject(),
+                product: {
+                    ...item.product.toObject(),
+                    id: item.product._id.toString()
+                }
+            }))
+        };
+        
+        res.render('cartDetail', {
+            title: 'Tu Carrito',
+            cart: normalizedCart
+        });
 
-})
+    } catch (error) {
+        console.error('Error cargando carrito:', error);
+        res.render('cartDetail', {
+            title: 'Error',
+            cart: null
+        });
+    }
+});
 
 module.exports = router;

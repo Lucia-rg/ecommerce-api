@@ -1,0 +1,242 @@
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/products"><i class="fas fa-arrow-left me-1"></i>Volver a productos</a></li>
+                <li class="breadcrumb-item active">Detalle del producto</li>
+            </ol>
+        </nav>
+
+        {{#if product}}
+        <div class="card product-detail-card">
+            <div class="row g-0">
+                <div class="col-md-6">
+                    <div class="product-images p-4">
+                        {{#if product.thumbnails.length}}
+                            <div class="main-image mb-3">
+                                <img src="{{product.thumbnails.[0]}}" alt="{{product.title}}" 
+                                     class="img-fluid rounded" id="mainProductImage">
+                            </div>
+                            {{#if (gt product.thumbnails.length 1)}}
+                            <div class="thumbnail-gallery">
+                                <div class="row g-2">
+                                    {{#each product.thumbnails}}
+                                    <div class="col-3">
+                                        <img src="{{this}}" alt="{{../product.title}} - Imagen {{@index}}" 
+                                             class="img-thumbnail thumbnail-image" 
+                                             data-image="{{this}}">
+                                    </div>
+                                    {{/each}}
+                                </div>
+                            </div>
+                            {{/if}}
+                        {{else}}
+                            <div class="bg-light d-flex align-items-center justify-content-center rounded" 
+                                 style="height: 400px;">
+                                <i class="fas fa-image fa-5x text-muted"></i>
+                            </div>
+                        {{/if}}
+                    </div>
+                </div>
+
+                <!-- Columna de información -->
+                <div class="col-md-6">
+                    <div class="card-body h-100 d-flex flex-column p-4">
+                        <div class="mb-3">
+                            <span class="badge {{#if product.status}}bg-success{{else}}bg-danger{{/if}} mb-2">
+                                {{#if product.status}}Disponible{{else}}Agotado{{/if}}
+                            </span>
+                            <h1 class="h2 card-title">{{product.title}}</h1>
+                            <p class="text-muted">{{product.description}}</p>
+                        </div>
+
+                        <div class="product-info mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="h1 text-primary">${{product.price}}</span>
+                                <span class="badge bg-dark fs-6">{{product.stock}} unidades disponibles</span>
+                            </div>
+
+                            <div class="product-meta">
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <span class="badge bg-secondary w-100 py-2">
+                                            <i class="fas fa-tag me-1"></i>{{product.category}}
+                                        </span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="badge bg-light text-dark w-100 py-2">
+                                            <i class="fas fa-hashtag me-1"></i>#{{product.code}}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-dark btn-lg add-to-cart-detail" 
+                                        data-product-id="{{product.id}}"
+                                        {{#unless product.status}}disabled{{/unless}} 
+                                        {{#unless product.stock}}disabled{{/unless}}>
+                                    <i class="fas fa-cart-plus me-2"></i>
+                                    {{#if product.status}}
+                                        {{#if product.stock}}
+                                            Agregar al carrito
+                                        {{else}}
+                                            Sin stock
+                                        {{/if}}
+                                    {{else}}
+                                        No disponible
+                                    {{/if}}
+                                </button>
+                                <a href="/products" class="btn btn-outline-secondary">
+                                    <i class="fas fa-store me-2"></i>Seguir comprando
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{else}}
+        <div class="text-center py-5">
+            <i class="fas fa-exclamation-triangle fa-4x text-warning mb-3"></i>
+            <h3 class="text-muted">Producto no encontrado</h3>
+            <p class="text-muted">El producto que buscas no existe o ha sido eliminado</p>
+            <a href="/products" class="btn btn-secondary mt-3">
+                <i class="fas fa-arrow-left me-2"></i>Volver a productos
+            </a>
+        </div>
+        {{/if}}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cambiar imagen principal al hacer clic en miniaturas
+        document.querySelectorAll('.thumbnail-image').forEach(thumb => {
+            thumb.addEventListener('click', function() {
+                const mainImage = document.getElementById('mainProductImage');
+                mainImage.src = this.getAttribute('data-image');
+                
+                // Remover clase activa de todas las miniaturas
+                document.querySelectorAll('.thumbnail-image').forEach(img => {
+                    img.classList.remove('active');
+                });
+                
+                // Agregar clase activa a la miniatura clickeada
+                this.classList.add('active');
+            });
+        });
+
+        // Función para agregar al carrito desde el detalle
+        async function addToCartFromDetail(productId) {
+            const button = document.querySelector('.add-to-cart-detail');
+            const originalText = button.innerHTML;
+            
+            try {
+                button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Agregando...';
+                button.disabled = true;
+                
+                let cartId = await getCurrentCartId();
+                
+                const response = await fetch(`/api/carts/${cartId}/product/${productId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Error al agregar al carrito: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                showNotification('✅ Producto agregado al carrito correctamente');
+                
+            } catch (error) {
+                console.error('Error agregando al carrito:', error);
+                showNotification('❌ ' + error.message, 'error');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+
+        // Event listener para el botón de agregar al carrito en el detalle
+        document.querySelector('.add-to-cart-detail')?.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            addToCartFromDetail(productId);
+        });
+
+        // Reutilizar funciones existentes
+        async function getCurrentCartId() {
+            let cartId = localStorage.getItem('currentCartId');
+            
+            if (!cartId) {
+                try {
+                    const response = await fetch('/api/carts/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const newCart = await response.json();
+                        cartId = newCart.id;
+                        
+                        if (!cartId) {
+                            throw new Error('No se pudo obtener el ID del carrito de la respuesta');
+                        }
+                        
+                        localStorage.setItem('currentCartId', cartId);
+                    } else {
+                        const errorText = await response.text();
+                        throw new Error(`Error ${response.status} creando carrito: ${errorText}`);
+                    }
+                } catch (error) {
+                    throw error;
+                }
+            }
+            
+            return cartId;
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+    });
+</script>
+
+<style>
+    .thumbnail-image {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .thumbnail-image:hover,
+    .thumbnail-image.active {
+        border-color: #0d6efd !important;
+        transform: scale(1.05);
+    }
+    
+    .product-detail-card {
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+</style>
