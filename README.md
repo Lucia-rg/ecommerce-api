@@ -5,13 +5,13 @@ API en construcción para un e-commerce. Esta API permite gestionar productos, c
 
 ## 🚀 Características
 - ✅ Gestión completa de productos (CRUD completo)
--✅ Carritos de compra con persistencia
--✅ Vistas en tiempo real con Socket.io
--✅ Templates con Handlebars
--✅ Base de datos MongoDB con Mongoose
--✅ Filtros y paginación avanzada
--✅ Interfaz de usuario responsive
--✅ Gestión de carritos por usuario
+- ✅ Carritos de compra con persistencia
+- ✅ Vistas en tiempo real con Socket.io
+- ✅ Templates con Handlebars
+- ✅ Base de datos MongoDB con Mongoose
+- ✅ Filtros y paginación avanzada
+- ✅ Interfaz de usuario responsive
+- ✅ Gestión de carritos por usuario
 
 ## 🌐 Endpoints de la API
 ### 📦 Productos
