@@ -13,6 +13,19 @@ API en construcción para un e-commerce. Esta API permite gestionar productos, c
 - ✅ Interfaz de usuario responsive
 - ✅ Gestión de carritos por usuario
 
+
+## Conexión a MongoDB Atlas
+
+```bash
+mongodb+srv://<db_username>:<db_password>@clusterondasonar.wk1ddvt.mongodb.net/?retryWrites=true&w=majority&appName=ClusterOndaSonar
+```
+
+### Variables de Entorno
+```env
+MONGODB_URI=mongodb+srv://<db_username>:<db_password>@clusterondasonar.wk1ddvt.mongodb.net/?retryWrites=true&w=majority&appName=ClusterOndaSonar
+DB_NAME=ecommerce_onda_sonar
+```
+
 ## 🌐 Endpoints de la API
 ### 📦 Productos
 | Método | Endpoint | Descripción | Body Required |
