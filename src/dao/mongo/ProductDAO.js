@@ -4,11 +4,55 @@ class ProductDAO {
     constructor(){
     }
 
-    async getProducts() {
+    async getProducts({ limit = 10, page = 1, sort, query } = {}) {
         try {
-            return await Product.find({});
+
+            const options = {
+                limit: parseInt(limit),
+                page: parseInt(page),
+                lean: true
+            }
+
+            if (sort) {
+                options.sort = { price: sort === 'asc' ? 1 : -1 };
+            }
+
+            let filter = {};
+            if (query) {
+                filter = {
+                    $or: [
+                        {category: {$regex: query, $options: 'i'}},
+                        {status: query === 'available' ? true : query === 'unavailable' ? false : undefined}
+                    ].filter(option => {
+                        const value = Object.values(option)[0];
+                        return value !== undefined && value !== null;
+                    })
+                }
+
+                if (filter.$or.length === 0) {
+                    filter = {};
+                }
+            };
+
+            const result = await Product.paginate(filter, options);
+
+            return {
+                status: 'success',
+                payload: result.docs,
+                totalPages: result.totalPages,
+                prevPage: result.prevPage,
+                nextPage: result.nextPage,
+                page: result.page,
+                hasPrevPage: result.hasPrevPage,
+                hasNextPage: result.hasNextPage,
+                prevLink: result.hasPrevPage ? 
+                    `?page=${result.prevPage}&limit=${limit}${sort ? `&sort=${sort}` : ''}${query ? `&query=${query}` : ''}` : null,
+                nextLink: result.hasNextPage ? 
+                    `?page=${result.nextPage}&limit=${limit}${sort ? `&sort=${sort}` : ''}${query ? `&query=${query}` : ''}` : null
+            };
+
         } catch (error) {
-            throw new Error('Error obteniendo productos: ', error.message);
+            throw new Error(`Error obteniendo productos: ${error.message}`);
         }
     }
 

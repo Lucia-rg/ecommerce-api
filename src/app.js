@@ -40,7 +40,26 @@ const hbs = create({
     extname: '.handlebars',
     defaultLayout: 'main',
     layoutsDir: path.join(__dirname, "views/layouts/"),
-    partialsDir: path.join(__dirname, "views/partials/")
+    partialsDir: path.join(__dirname, "views/partials/"),
+    helpers: {
+        eq: function (a, b) {
+            return a === b;
+        },
+        neq: function (a, b) {
+            return a !== b;
+        },
+        gt: function (a, b) {
+        return a > b;
+        },
+        multiply: function (a, b) {
+        return a * b;
+        },
+        calculateSubtotal: function (products) {
+            return products.reduce((total, item) => {
+                return total + (item.product.price * item.quantity);
+            }, 0);
+        }
+    }
 });
 
 app.engine("handlebars", hbs.engine);
@@ -54,21 +73,21 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // Routers
 const productsRouter = require('./routes/products.router');
-// const productService = require('./routes/products.router').productService;
 const cartsRouter = require('./routes/carts.router');
 const viewsRouter = require('./routes/views.router');
 
+app.use('/', viewsRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
-app.use('/', viewsRouter);
+
 
 // Configuración Socket.io
  io.on("connection", (socket) => {
     console.log('Usuario conectado: ', socket.id);
 
-    productService.getProducts()
-    .then(products => {
-        socket.emit("productUpdated", products);
+    productService.getProducts({})
+    .then(result => {
+        socket.emit("productUpdated", result.payload);
     })
     .catch(error => {
         console.error("Error enviando productos iniciales:", error);
@@ -89,8 +108,8 @@ app.use('/', viewsRouter);
 
             });
 
-            const updatedProducts = await productService.getProducts();
-            io.emit("productUpdated", updatedProducts);
+            const updatedProducts = await productService.getProducts({});
+            io.emit("productUpdated", updatedProducts.payload);
             
             console.log("✅ Producto creado exitosamente:", newProduct.id);
 
@@ -105,13 +124,13 @@ app.use('/', viewsRouter);
 
             await productService.deleteProduct(productId);
 
-            const updatedProducts = await productService.getProducts();
-            io.emit("productUpdated", updatedProducts);
+            const updatedProducts = await productService.getProducts({});
+            io.emit("productUpdated", updatedProducts.payload);
             
             console.log("✅ Producto eliminado exitosamente:", productId);
             
         } catch (error) {
-            console.error("Error creando producto:", error.message);
+            console.error("Error eliminando producto:", error.message);
             socket.emit("error", error.message);       
         }
 
@@ -119,8 +138,8 @@ app.use('/', viewsRouter);
 
     socket.on("requestProducts", async() => {
         try {
-            const products = await productService.getProducts();
-            socket.emit("productUpdated", products);
+            const products = await productService.getProducts({});
+            socket.emit("productUpdated", products.payload);
             
         } catch (error) {
             console.error("Error obteniendo productos:", error.message);
@@ -137,7 +156,7 @@ app.use('/', viewsRouter);
 // Ruta raíz. Información de la API
 
 app.get('/', (req, res) => {
-    res.redirect('/home');
+    res.redirect('/products');
 });
 
 app.get('/api', (req, res) => {

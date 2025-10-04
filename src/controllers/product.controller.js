@@ -5,7 +5,8 @@ class ProductController {
 
     getProducts = async (req, res) => {
         try {
-            const products = await this.productService.getProducts();
+            const { limit = 10, page = 1, sort, query } = req.query;
+            const products = await this.productService.getProducts( {limit: parseInt(limit), page: parseInt(page), sort, query});
             res.json(products); 
         } catch (error) {
             res.status(500).json({

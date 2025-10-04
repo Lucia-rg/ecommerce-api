@@ -26,13 +26,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/api/products">
+                        <a class="nav-link" href="/products">
                             <i class="fas fa-list me-1"></i>API Productos
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/api/carts">
-                            <i class="fas fa-shopping-cart me-1"></i>API Carritos
+                        <a class="nav-link"  href="#" id="cartNavLink">
+                            <i class="fas fa-shopping-cart me-1"></i>Mi carrito
                         </a>
                     </li>
 
@@ -45,3 +45,15 @@
     </nav>
 
 </header>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cartNavLink = document.getElementById('cartNavLink');
+    const cartId = localStorage.getItem('currentCartId');
+    if (cartId) {
+        cartNavLink.href = `/carts/${cartId}`; 
+    } else {
+        cartNavLink.href = '/products';
+    }
+});
+</script>
