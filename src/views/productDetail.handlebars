@@ -113,18 +113,16 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Cambiar imagen principal al hacer clic en miniaturas
+
         document.querySelectorAll('.thumbnail-image').forEach(thumb => {
             thumb.addEventListener('click', function() {
                 const mainImage = document.getElementById('mainProductImage');
                 mainImage.src = this.getAttribute('data-image');
-                
-                // Remover clase activa de todas las miniaturas
+
                 document.querySelectorAll('.thumbnail-image').forEach(img => {
                     img.classList.remove('active');
                 });
                 
-                // Agregar clase activa a la miniatura clickeada
                 this.classList.add('active');
             });
         });
@@ -164,13 +162,11 @@
             }
         }
 
-        // Event listener para el botón de agregar al carrito en el detalle
         document.querySelector('.add-to-cart-detail')?.addEventListener('click', function() {
             const productId = this.getAttribute('data-product-id');
             addToCartFromDetail(productId);
         });
 
-        // Reutilizar funciones existentes
         async function getCurrentCartId() {
             let cartId = localStorage.getItem('currentCartId');
             
@@ -223,20 +219,3 @@
     });
 </script>
 
-<style>
-    .thumbnail-image {
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    
-    .thumbnail-image:hover,
-    .thumbnail-image.active {
-        border-color: #0d6efd !important;
-        transform: scale(1.05);
-    }
-    
-    .product-detail-card {
-        border: none;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    }
-</style>
